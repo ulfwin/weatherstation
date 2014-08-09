@@ -20,7 +20,7 @@
 '// Definitions
 '//******************************************************************************
 'BP 0000
-#DEFINE MEAS_INTERVAL_MIN22 23*2
+'//#DEFINE MEAS_INTERVAL_MIN22 23*2
 'BP 0001
 '//******************************************************************************
 '// Library Import
@@ -32,8 +32,8 @@
 '//******************************************************************************
 
 '// Time between measurements
-DIM MEAS_INTERVAL_MIN : MEAS_INTERVAL_MIN=10
-DIM MEAS_INTERVAL_MS : MEAS_INTERVAL_MS = 1 '//MEAS_INTERVAL_MIN*60*1000
+CONST MEAS_INTERVAL_MIN : MEAS_INTERVAL_MIN=10
+CONST MEAS_INTERVAL_MS : MEAS_INTERVAL_MS=MEAS_INTERVAL_MIN*60*1000
 
 DIM mv
 
