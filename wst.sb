@@ -8,19 +8,20 @@
 '// +++++                                                                      ++
 '// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 '//
-'// Enter some description here.
+'// Simple program that reads the supply volts in mV and
+'// prints it to the UART
 '//
-'// When saving this file, give it a filename which has the form  xx.yyyyyy.sb
-'// where xx is a 1,2 or 3 letter mnemonic of the app so that you can launch it
-'// from UwTerminal with minimal typing and make yyyy as descriptive as you like
-'// as long as the total filename does not exceed the operating systems limit
+'// 02/03/2013
 '//
 '//******************************************************************************
+
 
 '//******************************************************************************
 '// Definitions
 '//******************************************************************************
-
+'BP 0000
+#DEFINE MEAS_INTERVAL_MIN22 23*2
+'BP 0001
 '//******************************************************************************
 '// Library Import
 '//******************************************************************************
@@ -30,7 +31,13 @@
 '// Global Variable Declarations
 '//******************************************************************************
 
-dim rc      '//result code
+'// Time between measurements
+DIM MEAS_INTERVAL_MIN : MEAS_INTERVAL_MIN=10
+DIM MEAS_INTERVAL_MS : MEAS_INTERVAL_MS = 1 '//MEAS_INTERVAL_MIN*60*1000
+
+DIM mv
+
+'BP 0002
 
 '//******************************************************************************
 '// Function and Subroutine definitions
@@ -40,9 +47,22 @@ dim rc      '//result code
 '// Handler definitions
 '//******************************************************************************
 
+FUNCTION HandlerTimer0()
+	BP 0005
+	mv=ReadPwrSupplyMv()
+	PRINT "\n\nSupply voltage is ";mv;"mV\n"
+	BP 0006
+ENDFUNC 1
 '//******************************************************************************
 '// Equivalent to main() in C
 '//******************************************************************************
+
+'BP 0003
+ONEVENT EVTMR0 CALL HandlerTimer0
+
+BP 0004
+TimerStart(0,1000,1)
+BP 0007
 
 
 '//------------------------------------------------------------------------------
@@ -50,4 +70,3 @@ dim rc      '//result code
 '// An application can have multiple <WaitEvent> statements
 '//------------------------------------------------------------------------------
 waitevent
-
