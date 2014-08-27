@@ -1,0 +1,114 @@
+'//******************************************************************************
+'// Laird Technologies (c) 2013
+'//
+'// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+'// ######                                                                #######
+'// ######        Library File meant to be #included in files             #######
+'// ######                                                                #######
+'// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+'//
+'// This library is for weather station functionality and should be
+'// #included in your app
+'//
+'//******************************************************************************
+
+'//******************************************************************************
+'// Definitions
+'//******************************************************************************
+
+'//******************************************************************************
+'// Register Error Handler as early as possible
+'//******************************************************************************
+sub HandlerOnErr()
+  if (ENABLE_DEBUG_PRINTS!=0) then
+    print "\n OnErr - ";GetLastError();"\n"
+  endif
+endsub
+onerror next HandlerOnErr
+
+'//******************************************************************************
+'// Create custom UUID handle
+'//******************************************************************************
+DIM uuid$
+uuid$ = "e198f87f58b346e7b9a6bedfad46833c"
+uuid$ = StrDehexize$(uuid$)
+hUuidCustom = BleHandleUuid128(uuid$)
+IF hCustomUuid == 0 THEN
+	PRINT "\nFailed to create a handle"
+ELSE
+	PRINT "Handle for custom Uuid is ";integer.h' hUuid1;"(";hUuid1;")"
+ENDIF
+
+
+'//******************************************************************************
+'// Library Import
+'//******************************************************************************
+#include "lib\debugging.routines.sblib"
+#include "lib\ble.sblib"
+#include "lib\standard.advert.mngr.sblib"
+#include "lib\advert.report.manager.sblib"
+#include "lib\connection.manager.sblib"
+#include "lib\security.manager.sblib"
+#include "lib\gap.service.sblib"
+#include "lib\device.information.service.sblib"
+#include "lib\battery.service.sblib"
+'// to be written:
+#include "lib\temp.service.sblib"
+#include "lib\wind.service.sblib"
+#include "lib\light.service.sblib"
+#include "lib\rain.service.sblib"
+#include "lib\humidity.service.sblib"
+
+'//******************************************************************************
+'// Global Variable Declarations
+'//******************************************************************************
+
+'//******************************************************************************
+'// Initialise Global Variable
+'//******************************************************************************
+
+'//******************************************************************************
+'// Function and Subroutine definitions
+'//******************************************************************************
+'//==============================================================================
+'// This is called to start things off just before the waitevent at the end of
+'// the file
+'//==============================================================================
+
+sub OnStartup()
+
+  InitSecurityMngr(PAIRING_IOCAPABILITY,MIN_LTK_SIZE, MAX_LTK_SIZE)
+
+  // Initialise services
+  InitGapService()
+  InitDisService()
+  InitBatService(BATT_INIT_LEVEL_PERC,BATT_NOTIFY)  //2nd parameter will be allowed to be 1 in future
+  InitBpsService()
+
+  // Initiliase advert and scan reports
+  InitAdvReports(advFlags)
+
+endsub
+
+'//******************************************************************************
+'// Handler definitions
+'//******************************************************************************
+
+'//******************************************************************************
+'// Other initialisations
+'//******************************************************************************
+
+'//------------------------------------------------------------------------------
+'// Initialise Services and then wait for events
+'//------------------------------------------------------------------------------
+
+if (AUTO_STARTUP & 1) != 0 then
+  //Create Advert packets and register services
+  OnStartup()
+endif
+if (AUTO_STARTUP & 2) != 0 then
+  //Start advertising
+  dim rc
+  rc=StartAds(ADV_IND)
+endif
+
