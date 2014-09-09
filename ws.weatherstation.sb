@@ -19,70 +19,73 @@
 '//******************************************************************************
 '// Definitions
 '//******************************************************************************
-'// NEED TO GO THROUGH ALL DEFINES BELOW (change to capitals when done)
+// NEED TO GO THROUGH ALL DEFINES BELOW (change to capitals when done)
         //This defines how the application startsup and is a bit mask.
         //Bit 0 == 1 then OnStartup() is called just before waitevent
         //Bit 1 == 1 then StartAds() is called just before waitevent
 #DEFINE AUTO_STARTUP        3
 
         '//Set this to 0 to disable all debugging messages
-#define ENABLE_DEBUG_PRINTS                  1
+#DEFINE ENABLE_DEBUG_PRINTS                  1
 
-#define DEVICENAME          "LAIRD_BP"
-#define DEVICENAME_WRITABLE 1
-#define APPEARANCE          BLE_APPEARANCE_GENERIC_BLOOD_PRESSURE
-#define MANF_NAME           "Laird Technologies"
-#define MODELSTR            "BL600"
-#define SERIALNUM           "12345"
-#define HWREV               "HwRev1.0"
-#define SWREV               "SwRev1.0"
-#define SYSID               "\01\02\03\04\05\06\07\08"
-//#define SYSID               "@"
+#DEFINE DEVICENAME          "Weather Station"
+#DEFINE DEVICENAME_WRITABLE 0
+// At time of writing, no matching APPEARANCE exists (2014-08-27)
+#DEFINE APPEARANCE          0
+#DEFINE MANF_NAME           "Wulf inc."
+#DEFINE MODELSTR            "BL600"
+#DEFINE SERIALNUM           "s001"
+#DEFINE HWREV               "Hw v01-00"
+#DEFINE SWREV               "Sw v01-00"
+//#define SYSID               "\01\02\03\04\05\06\07\08"
+#DEFINE SYSID               "@"
 //#define REGLIST             "\DE\AD\C0\DE"
-#define REGLIST             ""
+#DEFINE REGLIST             ""
 //#define PNPID               "\01\04\BF\03\20\00\01"
-#define PNPID               ""
-#define CHAR_CR             13
+#DEFINE PNPID               ""
+#DEFINE CHAR_CR             13
 
-
-        '// Minimum acceptable connection interval (0.5 seconds)
-#define MIN_CONN_INTERVAL                    80000
-        '// Maximum acceptable connection interval (1 second).
-#define MAX_CONN_INTERVAL                    100000
+// The below parameters are chosen to have as low power consumption as possible
+        '// Minimum acceptable connection interval
+#DEFINE MIN_CONN_INTERVAL                    3000000
+        '// Maximum acceptable connection interval
+#DEFINE MAX_CONN_INTERVAL                    4000000
         '// Slave latency -- number of conn events that can be missed
         '// Effective Conn interval will be (SLAVE_LATENCY+1)*ACTUAL_CONN_INTERVAL
-#define SLAVE_LATENCY                        1
-        '// Connection supervisory timeout (4 seconds) - max 32 seconds
-#define CONN_SUP_TIMEOUT                     4000000
+#DEFINE SLAVE_LATENCY                        7
+        '// Connection supervisory timeout - max 32 seconds
+#DEFINE CONN_SUP_TIMEOUT                     32000000
         '//DiscoverableMode, set to BLE_DISCOVERABILITY_xxx
-#define DISCOVERY_MODE                       BLE_DISCOVERABILITY_GENERAL
-#define MAX_DEVNAME_CHRS                     10
+#DEFINE DISCOVERY_MODE                       BLE_DISCOVERABILITY_LIMITED
+#DEFINE MAX_DEVNAME_CHRS                     15
         '//Set Appearance advertise 0 to suppress
-#define ADV_APPEARANCE                       1
-        '//Advertise interval
-#define ADV_INTERVAL_MS                      100
+#DEFINE ADV_APPEARANCE                       1
+        '//Advertise interval (ms)
+#DEFINE ADV_INTERVAL_MS                      1000
         '//Advertise timeout
-#define ADV_TIMEOUT_MS                       300000
+#DEFINE ADV_TIMEOUT_MS                       10000
 
         '//Whitelist Policy in Adverts
-#define ADV_WHITELIST_FILTER_POLICY          ADV_FILTERPOLICY_ANY
+#DEFINE ADV_WHITELIST_FILTER_POLICY          ADV_FILTERPOLICY_ANY
 
         '//Minimum long term key size in octets
-#define MIN_LTK_SIZE                         8
+#DEFINE MIN_LTK_SIZE                         8
         '//Maximum long term key size in octets
-#define MAX_LTK_SIZE                         16
+#DEFINE MAX_LTK_SIZE                         16
 
         '// Set this to non-zero to enable notify on batt service
-#define BATT_NOTIFY                          0
-#define BATT_INIT_LEVEL_PERC                 100
+#DEFINE BATT_NOTIFY                          0
+#DEFINE BATT_INIT_LEVEL_PERC                 100
 
         '//This sets the pairing i/o capability using bonding
-#define PAIRING_IOCAPABILITY                 BLE_IOCAPABILITY_NONE
+	// Set authentication to none ("Just works")
+#DEFINE PAIRING_IOCAPABILITY                 BLE_IOCAPABILITY_NONE
 
         '//Connection Update Negotiation paramters
-#define FIRST_CONN_PARAMS_UPDATE_DELAY       5000
-#define NEXT_CONN_PARAMS_UPDATE_DELAY        5000
-#define MAX_CONN_PARAMS_UPDATE_DELAY         15000
+	// Not exactly sure what this does
+#DEFINE FIRST_CONN_PARAMS_UPDATE_DELAY       5000
+#DEFINE NEXT_CONN_PARAMS_UPDATE_DELAY        5000
+#DEFINE MAX_CONN_PARAMS_UPDATE_DELAY         15000
 
 '//******************************************************************************
 '// Library Import
@@ -94,7 +97,7 @@
 '// Global Variable Declarations
 '//******************************************************************************
 
-'// Time between measurements in milliseconds (60000 is one min)
+// Time between measurements in milliseconds (60000 is one min)
 
 DIM MEAS_INTERVAL_MS : MEAS_INTERVAL_MS=1000
 DIM mv
