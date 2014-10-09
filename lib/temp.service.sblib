@@ -1,0 +1,6 @@
+// Custom temperature servie
+
+dim shTmp as integer 	// Service handle
+dim chTmp as integer	// Characteristic handle
+
+dim units		// 
