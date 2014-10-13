@@ -30,13 +30,14 @@ onerror next HandlerOnErr
 '// Create custom UUID handle
 '//******************************************************************************
 DIM uuid$
+DIM hUuidCustom
 uuid$ = "e198f87f58b346e7b9a6bedfad46833c"
 uuid$ = StrDehexize$(uuid$)
 hUuidCustom = BleHandleUuid128(uuid$)
-IF hCustomUuid == 0 THEN
+IF hUuidCustom == 0 THEN
 	PRINT "\nFailed to create a handle"
 ELSE
-	PRINT "Handle for custom Uuid is ";integer.h' hUuid1;"(";hUuid1;")"
+	PRINT "Handle for custom Uuid is ";integer.h' hUuidCustom;"(";hUuidCustom;")"
 ENDIF
 
 
@@ -62,10 +63,12 @@ ENDIF
 '//******************************************************************************
 '// Global Variable Declarations
 '//******************************************************************************
+dim advFlags
 
 '//******************************************************************************
 '// Initialise Global Variable
 '//******************************************************************************
+advFlags = DISCOVERY_MODE
 
 '//******************************************************************************
 '// Function and Subroutine definitions
@@ -83,12 +86,21 @@ sub OnStartup()
   InitGapService()
   InitDisService()
   InitBatService(BATT_INIT_LEVEL_PERC,BATT_NOTIFY)  //2nd parameter will be allowed to be 1 in future
-  InitTmpService()
+  InitTempService()
 
   '// Initiliase advert and scan reports
   InitAdvReports(advFlags)
 
 endsub
+
+function StartAds(adv as integer) as integer
+  dim rc
+  rc=StartAdverts(adv)
+  if rc==0 then
+    DbgMsgVal("Start Adverts",adv)
+  endif
+endfunc rc
+
 
 '//******************************************************************************
 '// Handler definitions

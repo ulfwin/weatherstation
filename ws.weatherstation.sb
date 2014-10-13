@@ -118,9 +118,9 @@ ENDFUNC 1
 '// Equivalent to main() in C
 '//******************************************************************************
 
-ONEVENT EVTMR0 CALL HandlerTimer0
+//ONEVENT EVTMR0 CALL HandlerTimer0
 
-TimerStart(0,1000,1)
+//TimerStart(0,1000,1)
 
 
 '//------------------------------------------------------------------------------
