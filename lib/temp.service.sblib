@@ -23,30 +23,37 @@ sub InitTempService()
  // Create primary service
  hUuid1 = BleHandleUuidSibling(hUuidCustom,0x0001)
  rc = BleServiceNew(BLE_SERVICE_PRIMARY,hUuid1,shTemp)
+ AssertResCode(rc,1001) 
  
  //create the attribute buffer space
  rc = StrFill(attr$,0,MAX_VAL_LEN)
+ AssertResCode(rc,1002) 
  
  // Create temperature flag (see https://developer.bluetooth.org/gatt/characteristics/Pages/CharacteristicViewer.aspx?u=org.bluetooth.characteristic.temperature_measurement.xml)
  flgs=0x00
  
  // Save the flags field
  rc = BleEncode8(attr$,flgs,0)
+ AssertResCode(rc,1003) 
  
  // Save the value field
  rc = BleEncodeFloat(attr$,tempMant,tempExp,1)
+ AssertResCode(rc,1004) 
  
  // Create characteristic metadata
  mdVal = BleAttrMetadata(BLE_ATTR_ACCESS_OPEN,BLE_ATTR_ACCESS_NONE,MAX_VAL_LEN,1,rc)
  
  // Create characteristic (uuid is predefined by Bluetooth)
  rc = BleCharNew(BLE_CHAR_PROPERTIES_READ,BleHandleUuid16(0x2A1C),mdVal,0,0)
+ AssertResCode(rc,1005) 
  
  // Commit characteristic
  rc = BleCharCommit(shTemp,attr$,chTemp)
+ AssertResCode(rc,1006) 
  
  // End of service
  rc = BleServiceCommit(shTemp)
+ AssertResCode(rc,1007) 
  
  // Not adding service to AD since it's custom made
 
