@@ -28,7 +28,7 @@
 '//==============================================================================
 sub AssertResCode(byval rc as integer,byval tag as integer)
   if (ENABLE_DEBUG_PRINTS!=0) && (rc!=0) then
-    print "Failed with ";integer.h' rc;" at tag ";tag;"\n"
+    print "Failed with ";integer.h' rc;" at tag ";tag;"\r"
   endif
 endsub
 
