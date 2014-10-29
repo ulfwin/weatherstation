@@ -27,7 +27,7 @@
         '//Set this to 0 to disable all debugging messages
 #DEFINE ENABLE_DEBUG_PRINTS                  1
 
-#DEFINE DEVICENAME          "Weather Station"
+#DEFINE DEVICENAME          "Weather"
 #DEFINE DEVICENAME_WRITABLE 0
 // At time of writing, no matching APPEARANCE exists (2014-08-27)
 #DEFINE APPEARANCE          0
@@ -51,7 +51,7 @@
 #DEFINE MAX_CONN_INTERVAL                    4000000
         '// Slave latency -- number of conn events that can be missed
         '// Effective Conn interval will be (SLAVE_LATENCY+1)*ACTUAL_CONN_INTERVAL
-#DEFINE SLAVE_LATENCY                        7
+#DEFINE SLAVE_LATENCY                        6
         '// Connection supervisory timeout - max 32 seconds
 #DEFINE CONN_SUP_TIMEOUT                     32000000
         '//DiscoverableMode, set to BLE_DISCOVERABILITY_xxx
