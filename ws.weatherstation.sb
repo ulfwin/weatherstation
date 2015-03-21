@@ -51,16 +51,16 @@
 #DEFINE MAX_CONN_INTERVAL                    4000000
         '// Slave latency -- number of conn events that can be missed
         '// Effective Conn interval will be (SLAVE_LATENCY+1)*ACTUAL_CONN_INTERVAL
-#DEFINE SLAVE_LATENCY                        6
+#DEFINE SLAVE_LATENCY                        1 //6
         '// Connection supervisory timeout - max 32 seconds
-#DEFINE CONN_SUP_TIMEOUT                     32000000
+#DEFINE CONN_SUP_TIMEOUT                     1000000 //32000000
         '//DiscoverableMode, set to BLE_DISCOVERABILITY_xxx
 #DEFINE DISCOVERY_MODE                       BLE_DISCOVERABILITY_LIMITED
 #DEFINE MAX_DEVNAME_CHRS                     15
         '//Set Appearance advertise 0 to suppress
 #DEFINE ADV_APPEARANCE                       1
         '//Advertise interval (ms)
-#DEFINE ADV_INTERVAL_MS                      1000
+#DEFINE ADV_INTERVAL_MS                      100 //1000
         '//Advertise timeout
 #DEFINE ADV_TIMEOUT_MS                       10000
 
@@ -108,19 +108,22 @@ DIM mv
 '//******************************************************************************
 '// Handler definitions
 '//******************************************************************************
-
+#DEFINE MAX_SUPPLY_VOLTAGE_MV 3600
 FUNCTION HandlerTimer0()
 	mv=ReadPwrSupplyMv()
-	PRINT "Supply voltage is ";mv;"mV\r"
+	//PRINT "Supply voltage is ";mv;"mV\r"
+	DIM battLvl, rc
+	battLvl=mv*100/MAX_SUPPLY_VOLTAGE_MV
+	rc=SetBattLevel(battLvl)
 ENDFUNC 1
 
 '//******************************************************************************
 '// Equivalent to main() in C
 '//******************************************************************************
 
-//ONEVENT EVTMR0 CALL HandlerTimer0
+ONEVENT EVTMR0 CALL HandlerTimer0
 
-//TimerStart(0,1000,1)
+TimerStart(0,1000,1)
 
 
 '//------------------------------------------------------------------------------

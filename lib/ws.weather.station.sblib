@@ -37,7 +37,7 @@ hUuidCustom = BleHandleUuid128(uuid$)
 IF hUuidCustom == 0 THEN
 	PRINT "\nFailed to create a handle"
 ELSE
-	PRINT "Handle for custom Uuid is ";integer.h' hUuidCustom;"(";hUuidCustom;")"
+	PRINT "Handle for custom Uuid is ";integer.h' hUuidCustom;"(";hUuidCustom;")\r"
 ENDIF
 
 
