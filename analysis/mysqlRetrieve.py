@@ -14,6 +14,6 @@ with conn:
         cur = conn.cursor()
         cur.execute("SELECT * FROM Item1")
         rows = pl.array(cur.fetchall())
-        pl.plot(rows[100:,0], rows[100:,1], '.-')
+        pl.plot(rows[:,0], rows[:,1], '.-')
 	#print pl.array(rows[:10])[:,0]
 	pl.show()
