@@ -35,9 +35,13 @@ uuid$ = "e198f87f58b346e7b9a6bedfad46833c"
 uuid$ = StrDehexize$(uuid$)
 hUuidCustom = BleHandleUuid128(uuid$)
 IF hUuidCustom == 0 THEN
+  if (ENABLE_DEBUG_PRINTS!=0) then
 	PRINT "\nFailed to create a handle"
+  endif
 ELSE
+  if (ENABLE_DEBUG_PRINTS!=0) then
 	PRINT "Handle for custom Uuid is ";integer.h' hUuidCustom;"(";hUuidCustom;")\r"
+  endif
 ENDIF
 
 
