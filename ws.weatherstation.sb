@@ -25,7 +25,7 @@
 #DEFINE AUTO_STARTUP        3
 
         '//Set this to 0 to disable all debugging messages
-#DEFINE ENABLE_DEBUG_PRINTS                  1
+#DEFINE ENABLE_DEBUG_PRINTS                  0
 
 #DEFINE DEVICENAME          "Weather"
 #DEFINE DEVICENAME_WRITABLE 0
@@ -51,18 +51,18 @@
 #DEFINE MAX_CONN_INTERVAL                    4000000
         '// Slave latency -- number of conn events that can be missed
         '// Effective Conn interval will be (SLAVE_LATENCY+1)*ACTUAL_CONN_INTERVAL
-#DEFINE SLAVE_LATENCY                        1 //6
+#DEFINE SLAVE_LATENCY                        6
         '// Connection supervisory timeout - max 32 seconds
-#DEFINE CONN_SUP_TIMEOUT                     1000000 //32000000
+#DEFINE CONN_SUP_TIMEOUT                     10000000 //32000000
         '//DiscoverableMode, set to BLE_DISCOVERABILITY_xxx
-#DEFINE DISCOVERY_MODE                       BLE_DISCOVERABILITY_LIMITED
+#DEFINE DISCOVERY_MODE                       BLE_DISCOVERABILITY_GENERAL
 #DEFINE MAX_DEVNAME_CHRS                     15
         '//Set Appearance advertise 0 to suppress
 #DEFINE ADV_APPEARANCE                       1
         '//Advertise interval (ms)
-#DEFINE ADV_INTERVAL_MS                      100 //1000
-        '//Advertise timeout
-#DEFINE ADV_TIMEOUT_MS                       10000
+#DEFINE ADV_INTERVAL_MS                      900 //1000
+        '//Advertise timeout (0 means no timeout)
+#DEFINE ADV_TIMEOUT_MS                       0 //10000
 
         '//Whitelist Policy in Adverts
 #DEFINE ADV_WHITELIST_FILTER_POLICY          ADV_FILTERPOLICY_ANY
@@ -98,7 +98,7 @@
 
 // Time between measurements in milliseconds (60000 is one min)
 
-DIM MEAS_INTERVAL_MS : MEAS_INTERVAL_MS=1000
+DIM MEAS_INTERVAL_MS : MEAS_INTERVAL_MS=60000
 DIM mv
 
 '//******************************************************************************
@@ -109,21 +109,33 @@ DIM mv
 '// Handler definitions
 '//******************************************************************************
 #DEFINE MAX_SUPPLY_VOLTAGE_MV 3600
+#DEFINE MIN_SUPPLY_VOLTAGE_MV 1600
 FUNCTION HandlerTimer0()
 	mv=ReadPwrSupplyMv()
 	//PRINT "Supply voltage is ";mv;"mV\r"
 	DIM battLvl, rc
-	battLvl=mv*100/MAX_SUPPLY_VOLTAGE_MV
+	battLvl=(mv-MIN_SUPPLY_VOLTAGE_MV)*100/(MAX_SUPPLY_VOLTAGE_MV-MIN_SUPPLY_VOLTAGE_MV)
 	rc=SetBattLevel(battLvl)
+ENDFUNC 1
+
+FUNCTION HndlrDiscon(BYVAL hConn AS INTEGER, BYVAL nRsn AS INTEGER) AS INTEGER
+	//Start advertising directly after disconnect
+	dim rc
+	rc=StartAds(ADV_IND)
 ENDFUNC 1
 
 '//******************************************************************************
 '// Equivalent to main() in C
 '//******************************************************************************
 
-ONEVENT EVTMR0 CALL HandlerTimer0
+// Decrease power consumption by disabling UART
+UartClose()
 
-TimerStart(0,1000,1)
+ONEVENT EVTMR0 CALL HandlerTimer0
+ONEVENT EVDISCON CALL HndlrDiscon
+
+
+TimerStart(0,MEAS_INTERVAL_MS,1)
 
 
 '//------------------------------------------------------------------------------
