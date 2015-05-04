@@ -47,7 +47,7 @@ while 1:
 				sys.stdout.write("%s Battery level: %i %% (measurement nr %i)\r" %(str(datetime.datetime.now()), batt_lvl, measNr))
 				sys.stdout.flush()
 				pexpect.run(send2OH %str(batt_lvl))
-				time.sleep(60)
+				time.sleep(600)
 			else:
 				sys.stdout.write("\n")
 				connected = 0

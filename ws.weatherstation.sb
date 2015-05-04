@@ -98,7 +98,7 @@
 
 // Time between measurements in milliseconds (60000 is one min)
 
-DIM MEAS_INTERVAL_MS : MEAS_INTERVAL_MS=60000
+DIM MEAS_INTERVAL_MS : MEAS_INTERVAL_MS=600000
 DIM mv
 
 '//******************************************************************************
