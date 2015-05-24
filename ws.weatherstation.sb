@@ -8,10 +8,9 @@
 '// +++++                                                                      ++
 '// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 '//
-'// Simple program that reads the supply volts in mV and
-'// prints it to the UART
+'// Code for weather station, adapted from Laird examples
 '//
-'// 02/03/2013
+'// 2015-05-10 19:25
 '//
 '//******************************************************************************
 
@@ -46,12 +45,12 @@
 
 // The below parameters are chosen to have as low power consumption as possible
         '// Minimum acceptable connection interval
-#DEFINE MIN_CONN_INTERVAL                    3000000
+#DEFINE MIN_CONN_INTERVAL                    2000000
         '// Maximum acceptable connection interval
 #DEFINE MAX_CONN_INTERVAL                    4000000
         '// Slave latency -- number of conn events that can be missed
         '// Effective Conn interval will be (SLAVE_LATENCY+1)*ACTUAL_CONN_INTERVAL
-#DEFINE SLAVE_LATENCY                        6
+#DEFINE SLAVE_LATENCY                        0
         '// Connection supervisory timeout - max 32 seconds
 #DEFINE CONN_SUP_TIMEOUT                     10000000 //32000000
         '//DiscoverableMode, set to BLE_DISCOVERABILITY_xxx
@@ -115,6 +114,7 @@ FUNCTION HandlerTimer0()
 	//PRINT "Supply voltage is ";mv;"mV\r"
 	DIM battLvl, rc
 	battLvl=(mv-MIN_SUPPLY_VOLTAGE_MV)*100/(MAX_SUPPLY_VOLTAGE_MV-MIN_SUPPLY_VOLTAGE_MV)
+	//battLvl=UartInfo(0)
 	rc=SetBattLevel(battLvl)
 ENDFUNC 1
 
@@ -122,6 +122,9 @@ FUNCTION HndlrDiscon(BYVAL hConn AS INTEGER, BYVAL nRsn AS INTEGER) AS INTEGER
 	//Start advertising directly after disconnect
 	dim rc
 	rc=StartAds(ADV_IND)
+	if rc==0 then
+	  DbgMsgVal("Start Adverts after disconnect",adv)
+	endif
 ENDFUNC 1
 
 '//******************************************************************************
