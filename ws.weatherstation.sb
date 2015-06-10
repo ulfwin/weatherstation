@@ -34,7 +34,7 @@
 #DEFINE MODELSTR            "BL600"
 #DEFINE SERIALNUM           "s001"
 #DEFINE HWREV               "Hw v0.0.0"
-#DEFINE SWREV               "Sw v0.0.0"
+#DEFINE SWREV               "Sw v0.0.1"
 //#define SYSID               "\01\02\03\04\05\06\07\08"
 #DEFINE SYSID               "@"
 //#define REGLIST             "\DE\AD\C0\DE"
@@ -121,7 +121,8 @@ ENDFUNC 1
 FUNCTION HndlrDiscon(BYVAL hConn AS INTEGER, BYVAL nRsn AS INTEGER) AS INTEGER
 	//Start advertising directly after disconnect
 	dim rc
-	rc=StartAds(ADV_IND)
+	dim adv : adv=ADV_IND
+	rc=StartAds(adv)
 	if rc==0 then
 	  DbgMsgVal("Start Adverts after disconnect",adv)
 	endif
