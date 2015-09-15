@@ -59,7 +59,7 @@ ENDIF
 #include "lib\battery.service.sblib"
 // to be written:
 #include "lib\temp.service.sblib"
-//#include "lib\wind.service.sblib"
+#include "lib\wind.service.sblib"
 //#include "lib\light.service.sblib"
 //#include "lib\rain.service.sblib"
 //#include "lib\humidity.service.sblib"
@@ -91,7 +91,7 @@ sub OnStartup()
   InitDisService()
   InitBatService(BATT_INIT_LEVEL_PERC,BATT_NOTIFY)  //2nd parameter will be allowed to be 1 in future
   InitTempService()
-
+  InitWindService(0)
   '// Initiliase advert and scan reports
   InitAdvReports(advFlags)
 

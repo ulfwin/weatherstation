@@ -27,9 +27,7 @@ sub InitTempService()
  
  //create the attribute buffer space
  rc = StrFill(attr$,0,MAX_VAL_LEN)
- IF rc < 0 THEN
-  AssertResCode(rc,1002) 
- ENDIF
+ AssertResCode(rc,1002) 
 
  // Create temperature flag (see https://developer.bluetooth.org/gatt/characteristics/Pages/CharacteristicViewer.aspx?u=org.bluetooth.characteristic.temperature_measurement.xml)
  flgs=0x00

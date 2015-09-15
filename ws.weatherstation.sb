@@ -85,6 +85,19 @@
 #DEFINE NEXT_CONN_PARAMS_UPDATE_DELAY        5000
 #DEFINE MAX_CONN_PARAMS_UPDATE_DELAY         15000
 
+// ------- Weather station constants --------
+#DEFINE MAX_SUPPLY_VOLTAGE_MV 3600
+#DEFINE MIN_SUPPLY_VOLTAGE_MV 1600
+
+// Time between measurements in milliseconds (60000 is one min)
+#DEFINE MEAS_INTERVAL_MS	10000
+#DEFINE WIND_SPEED_MEAS_TIME_MS	5000
+
+// Timers
+#DEFINE TIMER_MAIN		0
+#DEFINE TIMER_WIND_SPEED	1
+#DEFINE RIS_EDGE_PER_REV	4
+
 '//******************************************************************************
 '// Library Import
 '//******************************************************************************
@@ -95,10 +108,11 @@
 '// Global Variable Declarations
 '//******************************************************************************
 
-// Time between measurements in milliseconds (60000 is one min)
-
-DIM MEAS_INTERVAL_MS : MEAS_INTERVAL_MS=60000
 DIM mv
+DIM WSCnt
+DIM startTick
+DIM lastEdge : lastEdge = 0
+DIM risEdgePerRev
 
 '//******************************************************************************
 '// Function and Subroutine definitions
@@ -107,39 +121,84 @@ DIM mv
 '//******************************************************************************
 '// Handler definitions
 '//******************************************************************************
-#DEFINE MAX_SUPPLY_VOLTAGE_MV 3600
-#DEFINE MIN_SUPPLY_VOLTAGE_MV 1600
-FUNCTION HandlerTimer0()
+
+// GPIO configuration
+rc=GpioSetFunc(24,1,0) // Wind speed digital input
+AssertResCode(rc,8001)
+
+// Decrease power consumption by disabling UART
+UartClose()
+
+
+FUNCTION HndlrStartMeas()
+	// Internal Voltage
 	mv=ReadPwrSupplyMv()
-	//PRINT "Supply voltage is ";mv;"mV\r"
+	DbgMsgVal("Supply voltage (mV): ",mv)
 	DIM battLvl, rc
 	battLvl=(mv-MIN_SUPPLY_VOLTAGE_MV)*100/(MAX_SUPPLY_VOLTAGE_MV-MIN_SUPPLY_VOLTAGE_MV)
 	//battLvl=UartInfo(0)
 	rc=SetBattLevel(battLvl)
+	AssertResCode(rc,8002)
+
+	// Wind Speed
+	WSCnt=0
+	TimerStart(TIMER_WIND_SPEED,WIND_SPEED_MEAS_TIME_MS,0)
+	rc=GpioAssignEvent(0,24,0)
+	AssertResCode(rc,8003)
+
+	DbgMsg("Measurement started")
+	
 ENDFUNC 1
 
-FUNCTION HndlrDiscon(BYVAL hConn AS INTEGER, BYVAL nRsn AS INTEGER) AS INTEGER
+FUNCTION HndlrBTDisconnect(BYVAL hConn AS INTEGER, BYVAL nRsn AS INTEGER) AS INTEGER
 	//Start advertising directly after disconnect
 	dim rc
 	dim adv : adv=ADV_IND
 	rc=StartAds(adv)
 	if rc==0 then
-	  DbgMsgVal("Start Adverts after disconnect",adv)
+	  DbgMsg("Start Adverts after disconnect")
 	endif
 ENDFUNC 1
+
+FUNCTION HndlrWSCnt()
+	if WSCnt == 0 then
+		startTick = GetTickCount()
+	else
+		lastEdge = GetTickSince(startTick)
+	endif
+	WSCnt=WSCnt+1
+ENDFUNC 1
+
+FUNCTION HndlrWSTimeout()
+	DIM rpm : rpm = 0
+	DIM windSpeed
+	DbgMsg("Wind speed timeout")
+        // Disable edge detect from anemometer
+        rc=GpioUnAssignEvent(0)
+	AssertResCode(rc,8004)
+
+	// Calculate rev/min
+	if lastEdge != 0 then
+		rpm = (WSCnt*60*1000)/RIS_EDGE_PER_REV/lastEdge
+	endif
+	// Calculate wind speed
+	windSpeed = rpm // TODO: Add factor after calibration!
+	DbgMsgVal("Wind speed (m/s*10^2):",windSpeed)
+	rc = SetWindSpeed(windSpeed)
+ENDFUNC 1
+
 
 '//******************************************************************************
 '// Equivalent to main() in C
 '//******************************************************************************
 
-// Decrease power consumption by disabling UART
-UartClose()
+ONEVENT EVTMR0 CALL HndlrStartMeas
+ONEVENT EVTMR1 CALL HndlrWSTimeout
+ONEVENT EVDISCON CALL HndlrBTDisconnect
+ONEVENT EVDETECTCHAN0 CALL HndlrWSCnt
 
-ONEVENT EVTMR0 CALL HandlerTimer0
-ONEVENT EVDISCON CALL HndlrDiscon
 
-
-TimerStart(0,MEAS_INTERVAL_MS,1)
+TimerStart(TIMER_MAIN, MEAS_INTERVAL_MS,1)
 
 
 '//------------------------------------------------------------------------------
