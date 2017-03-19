@@ -34,9 +34,19 @@
 
 '//==============================================================================
 '//==============================================================================
+function trunc(btLvl as integer) as integer
+  if btLvl < 0 then
+    btLvl = 0
+  elseif btLvl > 100 then
+    btLvl = 100
+  endif
+endfunc btLvl
+  
+
+
 function SetBattLevel(btLvl as integer) as integer
   dim rc
-  rc = BleSvcSetBattLevel(btLvl)
+  rc = BleSvcSetBattLevel(trunc(btLvl))
   AssertResCode(rc,2610)
 endfunc rc
 
@@ -46,13 +56,7 @@ endfunc rc
 sub InitBatService(byval batlvl as integer, byval fNfy as integer)
   dim rc
 
-  if batLvl < 0 then
-    batLvl = 0
-  elseif batLvl > 100 then
-    batLvl = 100
-  endif
-
-  rc = BleSvcRegBattery(batLvl,fNfy)
+  rc = BleSvcRegBattery(trunc(batLvl),fNfy)
   AssertResCode(rc,2620)
   if rc==0 then
      AddUuid(UUID_BATTERY_SERVICE)

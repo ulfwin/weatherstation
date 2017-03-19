@@ -32,8 +32,8 @@ dim wndSpd$ as string
 '// Initialise Global Variable
 '//******************************************************************************
 
-shWind = 0
-chWndSpd = 0
+//shWind = 0
+//chWndSpd = 0
 
 '//******************************************************************************
 '// Function and Subroutine definitions
@@ -58,12 +58,13 @@ function AddCharWindSpeed(byval wndSpd as integer) as integer
   //++++
   mdAttr = BleAttrMetadata(BLE_ATTR_ACCESS_OPEN,BLE_ATTR_ACCESS_NONE,2,0,rc)
   AssertResCode(rc,9200)
-  //There is no CCCD in this characteristic
-  mdCccd = BLE_CHAR_METADATA_ATTR_NOT_PRESENT
+  //Create CCCD (identifify) 
+  mdCccd = BleAttrMetadata(BLE_ATTR_ACCESS_OPEN,BLE_ATTR_ACCESS_OPEN,2,0,rc)
+  AssertResCode(rc,9205)
   //There is no SCCD in this characteristic
   mdSccd = BLE_CHAR_METADATA_ATTR_NOT_PRESENT
   //Create the Characteristic object
-  chProp = BLE_CHAR_PROPERTIES_READ
+  chProp = BLE_CHAR_PROPERTIES_INDICATE|BLE_CHAR_PROPERTIES_READ
   rc = BleCharNew(chProp,BleHandleUuid16(0x2A70),mdAttr,mdCccd,mdSccd)
   AssertResCode(rc,9210)
 
@@ -93,11 +94,11 @@ function RegWindService(byval wndSpd as integer) as integer
   //Create a wind PRIMARY service attribute which has a custom uuid of 0x0002
   //----------------------------------------------------------------------------
   hUuid1 = BleHandleUuidSibling(hUuidCustom,0x0002)
-  rc = BleSvcCommit(BLE_SERVICE_PRIMARY,hUuid1,shWind)
+  rc = BleServiceNew(BLE_SERVICE_PRIMARY,hUuid1,shWind)
   AssertResCode(rc,9100)
 
   //----------------------------------------------------------------------------
-  // Create the Battery Level Characteristic which has a UUID of 0x2A70
+  // Create the wind Characteristic which has a UUID of 0x2A70
   //----------------------------------------------------------------------------
   rc = AddCharWindSpeed(wndSpd)
   AssertResCode(rc,9110)
@@ -128,7 +129,7 @@ endsub
 function SetWindSpeed(wndSpd as integer) as integer
   dim rc
   rc = BleEncode16(wndSpd$,wndSpd,0)
-  rc = BleCharValueWrite(chWndSpd,wndSpd$)
+  rc = BleCharValueIndicate(chWndSpd,wndSpd$)
   AssertResCode(rc,9500)
 
 endfunc rc
