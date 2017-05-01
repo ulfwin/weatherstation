@@ -13,7 +13,7 @@ p = btle.Peripheral("f2:5c:dc:a2:94:ea", btle.ADDR_TYPE_RANDOM)
 p.setDelegate( MyDelegate() )
 
 # Setup to turn notifications on, e.g.
-svc = p.getServiceByUUID( "e198000258b346e7b9a6bedfad46833c" )
+svc = p.getServiceByUUID( "e198000158b346e7b9a6bedfad46833c" )
 ch = svc.getCharacteristics()[0]
 print(ch.valHandle)
 

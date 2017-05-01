@@ -1,9 +1,8 @@
-// Custom temperature service
+// Temperature characteristic
 // TO DO:
 // Create temperature value from BL600 pin
 
-sub InitTempService()
- dim shTemp as integer 	// Service handle
+sub AddCharTemp(byval sh as integer, byval temp)
  dim chTemp as integer	// Characteristic handle
  
  dim flgs
@@ -11,19 +10,13 @@ sub InitTempService()
  dim tempExp
  dim attr$
  dim rc
- dim hUuid1
  dim mdVal
  // One flag of 8 bit and one 32 bit float: 5 bytes
  dim MAX_VAL_LEN : MAX_VAL_LEN = 5
  
  // Get temperature value (for now fixed value)
- tempMant = 4036
+ tempMant = temp
  tempExp = 0
- 
- // Create primary service
- hUuid1 = BleHandleUuidSibling(hUuidCustom,0x0001)
- rc = BleServiceNew(BLE_SERVICE_PRIMARY,hUuid1,shTemp)
- AssertResCode(rc,1001) 
  
  //create the attribute buffer space
  rc = StrFill(attr$,0,MAX_VAL_LEN)
@@ -48,13 +41,7 @@ sub InitTempService()
  AssertResCode(rc,1005) 
  
  // Commit characteristic
- rc = BleCharCommit(shTemp,attr$,chTemp)
+ rc = BleCharCommit(sh,attr$,chTemp)
  AssertResCode(rc,1006) 
  
- // End of service
- rc = BleServiceCommit(shTemp)
- AssertResCode(rc,1007) 
- 
- // Not adding service to AD since it's custom made
-
 endsub

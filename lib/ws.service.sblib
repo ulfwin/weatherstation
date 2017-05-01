@@ -1,0 +1,31 @@
+// Custom weather station service
+
+#include "lib/temp.char.sblib"
+#include "lib/wind.char.sblib"
+//#include "lib/light.char.sblib"
+//#include "lib/rain.char.sblib"
+//#include "lib/humidity.char.sblib"
+
+sub InitWSService()
+ dim shWS as integer 	// Service handle
+ 
+ dim rc
+ dim hUuid1
+ 
+ // Create primary service
+ hUuid1 = BleHandleUuidSibling(hUuidCustom,0x0001)
+ rc = BleServiceNew(BLE_SERVICE_PRIMARY,hUuid1,shWS)
+ AssertResCode(rc,1001) 
+
+ // Add all characteristics
+ 
+ AddCharWindSpeed(shWS,0)
+ AddCharTemp(shWS,3333)
+ 
+ // End of service
+ rc = BleServiceCommit(shWS)
+ AssertResCode(rc,1007) 
+ 
+ // Not adding service to AD since it's custom made
+
+endsub
