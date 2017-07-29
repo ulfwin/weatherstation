@@ -1,21 +1,42 @@
 from bluepy import btle
+import struct
+import pexpect
+
+send2OH = 'curl --header "Content-Type: text/plain" --request PUT --data "%s" http://192.168.0.6:8080/rest/items/%s/state'
+
+def listAll(p):
+	for svc in p.getServices():
+		print(svc.uuid.getCommonName())
+		for ch in svc.getCharacteristics():
+			print(" " + str(ch.valHandle) + ": " + ch.uuid.getCommonName())
 
 class MyDelegate(btle.DefaultDelegate):
     def __init__(self):
         btle.DefaultDelegate.__init__(self)
 
     def handleNotification(self, cHandle, data):
-        print("A notification was received: ", data, "<-- data")
-	print(cHandle)
+        #print("A notification was received: " + data + "<-- data")
+	#print(cHandle)
+
+	# Get battery level
+	svc = p.getServiceByUUID( "180F" )
+	chBat = svc.getCharacteristics()[0]
+	batVal = struct.unpack('b', chBat.read())[0]
+	pexpect.run(send2OH %(str(batVal), "Battery_Level"))
+	print(batVal)
+
 
 
 p = btle.Peripheral("f2:5c:dc:a2:94:ea", btle.ADDR_TYPE_RANDOM)
 p.setDelegate( MyDelegate() )
 
+listAll(p)
+
 # Setup to turn notifications on, e.g.
 svc = p.getServiceByUUID( "e198000158b346e7b9a6bedfad46833c" )
 ch = svc.getCharacteristics()[0]
-print(ch.valHandle)
+
+#print(ch.valHandle)
 
 p.writeCharacteristic(ch.valHandle+1, "\x02\x00")
 
