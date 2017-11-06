@@ -24,7 +24,7 @@
 #DEFINE AUTO_STARTUP        3
 
         '//Set this to 0 to disable all debugging messages
-#DEFINE ENABLE_DEBUG_PRINTS                  1
+#DEFINE ENABLE_DEBUG_PRINTS                  0
 
 #DEFINE DEVICENAME          "Weather"
 #DEFINE DEVICENAME_WRITABLE 0
@@ -45,14 +45,14 @@
 
 // The below parameters are chosen to have as low power consumption as possible
         '// Minimum acceptable connection interval
-#DEFINE MIN_CONN_INTERVAL                    3000000
+#DEFINE MIN_CONN_INTERVAL                    500000
         '// Maximum acceptable connection interval
-#DEFINE MAX_CONN_INTERVAL                    4000000
+#DEFINE MAX_CONN_INTERVAL                    1000000
         '// Slave latency -- number of conn events that can be missed
         '// Effective Conn interval will be (SLAVE_LATENCY+1)*ACTUAL_CONN_INTERVAL
-#DEFINE SLAVE_LATENCY                        6
+#DEFINE SLAVE_LATENCY                        0
         '// Connection supervisory timeout - max 32 seconds
-#DEFINE CONN_SUP_TIMEOUT                     10000000 //32000000
+#DEFINE CONN_SUP_TIMEOUT                     4000000 //32000000
         '//DiscoverableMode, set to BLE_DISCOVERABILITY_xxx
 #DEFINE DISCOVERY_MODE                       BLE_DISCOVERABILITY_GENERAL
 #DEFINE MAX_DEVNAME_CHRS                     15
@@ -132,6 +132,7 @@ AssertResCode(rc,8001)
 
 // Decrease power consumption by disabling UART
 UartClose()
+//print "opening uart"
 
 
 FUNCTION HndlrStartMeas()
