@@ -1,8 +1,12 @@
 from bluepy import btle
 import struct
 import pexpect
+import datetime
 
+# String to send data to openhab
 send2OH = 'curl --header "Content-Type: text/plain" --request PUT --data "%s" http://192.168.0.6:8080/rest/items/%s/state'
+# Timeout in minutes
+timeout = 1
 
 def listAll(p):
 	for svc in p.getServices():
@@ -41,9 +45,9 @@ ch = svc.getCharacteristics()[0]
 p.writeCharacteristic(ch.valHandle+1, "\x02\x00")
 
 while True:
-    if p.waitForNotifications(600):
+    if p.waitForNotifications(int(timeout*60)):
         # handleNotification() was called
         continue
 
-    print("Waited for 10 min without notification...")
+    print(str(datetime.datetime.now()).split('.')[0] + ": Waited for %i min without notification..." %(timeout))
     # Perhaps do something else here
