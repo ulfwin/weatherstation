@@ -57,7 +57,6 @@ ENDIF
 #include "lib\gap.service.sblib"
 #include "lib\device.information.service.sblib"
 #include "lib\battery.service.sblib"
-#include "lib\ws.service.sblib"
 
 '//******************************************************************************
 '// Global Variable Declarations
@@ -85,7 +84,6 @@ sub OnStartup()
   InitGapService()
   InitDisService()
   InitBatService(BATT_INIT_LEVEL_PERC,BATT_NOTIFY)  //2nd parameter will be allowed to be 1 in future
-  InitWSService()
   '// Initiliase advert and scan reports
   InitAdvReports(advFlags)
 

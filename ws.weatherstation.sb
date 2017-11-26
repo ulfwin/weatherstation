@@ -93,7 +93,6 @@
 
 // Time between measurements in milliseconds (60000 is one min)
 #DEFINE MEAS_INTERVAL_MS	10000
-#DEFINE WIND_SPEED_MEAS_TIME_MS	5000
 
 // Timers
 #DEFINE TIMER_MAIN		0
@@ -144,53 +143,6 @@ FUNCTION HndlrStartMeas()
 	rc=SetBattLevel(battLvl)
 	AssertResCode(rc,8002)
 
-	// Wind Speed
-	WSCnt=0
-	TimerStart(TIMER_WIND_SPEED,WIND_SPEED_MEAS_TIME_MS,0)
-	rc=GpioAssignEvent(0,15,0)
-	AssertResCode(rc,8003)
-
-	DbgMsg("Measurement started")
-	
-ENDFUNC 1
-
-FUNCTION HndlrBTDisconnect(BYVAL hConn AS INTEGER, BYVAL nRsn AS INTEGER) AS INTEGER
-	//Start advertising directly after disconnect
-	dim rc
-	dim adv : adv=ADV_IND
-	rc=StartAds(adv)
-	if rc==0 then
-	  DbgMsg("Start Adverts after disconnect")
-	endif
-ENDFUNC 1
-
-FUNCTION HndlrWSCnt()
-	if WSCnt == 0 then
-		startTick = GetTickCount()
-	else
-		lastEdge = GetTickSince(startTick)
-	endif
-	WSCnt=WSCnt+1
-ENDFUNC 1
-
-FUNCTION HndlrWSTimeout()
-	DIM rpm : rpm = 0
-	DIM windSpeed
-	DbgMsg("Wind speed timeout")
-        // Disable edge detect from anemometer
-        rc=GpioUnAssignEvent(0)
-	AssertResCode(rc,8004)
-
-	// Calculate rev/min
-	if lastEdge != 0 then
-		rpm = (WSCnt*60*1000)/RIS_EDGE_PER_REV/lastEdge
-	endif
-	// Calculate wind speed
-	windSpeed = rpm // TODO: Add factor after calibration! In fact, the calibration should be a BL value
-	DbgMsgVal("Wind speed (m/s*10^2):",windSpeed)
-	SetWindSpeed(windSpeed)
-
-	// TODO: Send all data not already sent
 ENDFUNC 1
 
 
@@ -199,9 +151,6 @@ ENDFUNC 1
 '//******************************************************************************
 
 ONEVENT EVTMR0 CALL HndlrStartMeas
-ONEVENT EVTMR1 CALL HndlrWSTimeout
-ONEVENT EVDISCON CALL HndlrBTDisconnect
-ONEVENT EVDETECTCHAN0 CALL HndlrWSCnt
 //ONEVENT EVCHARHVC CALL HndlrResetData //TODO: write Hndlr
 
 
