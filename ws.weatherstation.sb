@@ -123,7 +123,7 @@ FUNCTION HndlrDiscon(BYVAL hConn AS INTEGER, BYVAL nRsn AS INTEGER) AS INTEGER
 	dim rc
 	rc=StartAds(ADV_IND)
 	if rc==0 then
-	  DbgMsgVal("Start Adverts after disconnect",adv)
+	  DbgMsgVal("Start Adverts after disconnect",ADV_IND)
 	endif
 ENDFUNC 1
 
